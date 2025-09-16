@@ -13,6 +13,10 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//ejs 세팅
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 app.get('/', (req, res) => {
     res.send('Hello world!');
 });

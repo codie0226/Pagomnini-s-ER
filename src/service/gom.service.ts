@@ -15,8 +15,9 @@ export class GomService{
 
     const userNumJSON = await apiResponse.json();
     const userNum: number = userNumJSON.user.userNum;
+    console.log(userNum);
 
-    const gamesResponse = await fetch(`${process.env.ER_API_ENDPOINT}v1/user/games?userNum=${userNum}`, {
+    const gamesResponse = await fetch(`${process.env.ER_API_ENDPOINT}v1/user/games/${userNum}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -26,7 +27,21 @@ export class GomService{
 
     const resultJSON = await gamesResponse.json();
 
-    console.log(resultJSON);
-    return resultJSON;
+    const mostRecentGame = resultJSON.userGames[0];
+    const mostRecentGameInfo: {
+      startDtm: Date,
+      mmrBefore: number,
+      mmrGain: number,
+      mmrAfter: number
+    } = {
+      startDtm: mostRecentGame.startDtm,
+      mmrBefore: mostRecentGame.mmrBefore,
+      mmrGain: mostRecentGame.mmrGain,
+      mmrAfter: mostRecentGame.mmrAfter
+    };
+
+    console.log(resultJSON.userGames[0]);
+    
+    return mostRecentGameInfo;
   }
 }

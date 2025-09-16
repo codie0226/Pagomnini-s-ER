@@ -2,10 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { GomService } from '../service/gom.service';
 
 export class GomController {
-    static GomService: GomService;
-    constructor(){
-        GomController.GomService = new GomService();
-    }
+    static GomService: GomService = new GomService();
 
     public static recentGame = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -16,7 +13,8 @@ export class GomController {
             }
             
             const result = await GomController.GomService.recentGameService(userName);
-            res.json(result);
+            //res.status(200).json(result);
+            res.render('index', {result});
 
         } catch (error) {
             console.error('An unexpected error occurred:', error);

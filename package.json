@@ -4,7 +4,7 @@
   "description": "민재야 이리 그만해라",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run build && nodemon ./dist/index.js",
+    "dev": "npm run build && nodemon ./dist/index.js --watch ./src",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +21,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
     "typescript": "^5.9.2"
