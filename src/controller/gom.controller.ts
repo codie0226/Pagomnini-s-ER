@@ -15,7 +15,7 @@ export class GomController {
                 return res.status(400).json({ message: '사용자 이름(name)이 필요합니다.' });
             }
             
-            const result = await this.GomService.recentGameService(userName);
+            const result = await GomController.GomService.recentGameService(userName);
             res.json(result);
 
         } catch (error) {
