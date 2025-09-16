@@ -1,5 +1,7 @@
+import { simpleGameInfo } from "../dto/gom.interface";
+
 export class GomService{
-  public recentGameService = async (nickname: string) => {
+  public recentGameService = async (nickname: string): Promise<simpleGameInfo> => {
     const apiResponse = await fetch(`${process.env.ER_API_ENDPOINT}v1/user/nickname?query=${nickname}`, {
       method: "GET",
       headers: {
@@ -28,12 +30,7 @@ export class GomService{
     const resultJSON = await gamesResponse.json();
 
     const mostRecentGame = resultJSON.userGames[0];
-    const mostRecentGameInfo: {
-      startDtm: Date,
-      mmrBefore: number,
-      mmrGain: number,
-      mmrAfter: number
-    } = {
+    const mostRecentGameInfo: simpleGameInfo = {
       startDtm: mostRecentGame.startDtm,
       mmrBefore: mostRecentGame.mmrBefore,
       mmrGain: mostRecentGame.mmrGain,
@@ -41,7 +38,7 @@ export class GomService{
     };
 
     console.log(resultJSON.userGames[0]);
-    
+
     return mostRecentGameInfo;
   }
 }

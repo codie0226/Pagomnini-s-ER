@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { GomService } from '../service/gom.service';
+import { simpleGameInfo } from '../dto/gom.interface';
 
 export class GomController {
     static GomService: GomService = new GomService();
@@ -12,7 +13,7 @@ export class GomController {
                 return res.status(400).json({ message: '사용자 이름(name)이 필요합니다.' });
             }
             
-            const result = await GomController.GomService.recentGameService(userName);
+            const result: simpleGameInfo = await GomController.GomService.recentGameService(userName);
             //res.status(200).json(result);
             res.render('index', {result});
 
