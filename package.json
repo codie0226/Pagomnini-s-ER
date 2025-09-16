@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npm run build && nodemon ./dist/index.js --watch ./src",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build && node ./dist/index.js"
   },
   "repository": {
     "type": "git",
