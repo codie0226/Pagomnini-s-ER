@@ -38,7 +38,10 @@ export class GomController {
                     },
                     body: JSON.stringify(messageContent)
                 }
-            )
+            );
+
+            res.status(200).send('success');
+
         }catch (error){
             console.error('An unexpected error occurred', error);
             next(error);
