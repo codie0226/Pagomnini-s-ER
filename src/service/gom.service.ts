@@ -58,20 +58,20 @@ export class GomService{
     let timeDiffMessage: string = '';
 
     if(diffDate > 0){
-      timeDiffMessage += `${diffDate}일 전`
+      timeDiffMessage += `${diffDate}일 `
     }
     if(diffHours > 0){
-      timeDiffMessage += `${diffHours}시간 전`
+      timeDiffMessage += `${diffHours}시간 `
     }
     if(diffSec > 0){
-      timeDiffMessage += `${diffSec}초 전`
+      timeDiffMessage += `${diffSec}초 `
     }
 
     console.log(gameDate);
 
     const messageContent = {
       "username": "라그나로스 트래커",
-      "content": `${timeDiffMessage}에 ${mostRecentGameInfo.mmrGain}점을 얻고 ${mostRecentGameInfo.mmrAfter}점이 되었음.`
+      "content": `${timeDiffMessage}전에 ${mostRecentGameInfo.mmrGain}점을 얻고 ${mostRecentGameInfo.mmrAfter}점이 되었음.`
     }
 
     const send = await fetch(`${process.env.DISCORD_WEBHOOK}`,
