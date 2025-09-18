@@ -59,12 +59,12 @@ export class GomService{
 
     if(diffDate > 0){
       timeDiffMessage += `${diffDate}일 전`
-    }else if(diffHours > 0){
+    }
+    if(diffHours > 0){
       timeDiffMessage += `${diffHours}시간 전`
-    }else if(diffSec > 0){
+    }
+    if(diffSec > 0){
       timeDiffMessage += `${diffSec}초 전`
-    }else{
-      timeDiffMessage += '방금 전'
     }
 
     console.log(gameDate);
