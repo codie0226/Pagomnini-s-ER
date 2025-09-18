@@ -23,6 +23,8 @@ app.get('/', (req, res) => {
 
 app.get('/nickname/:name', GomController.recentGame);
 
+app.post('/discord', GomController.sendMessageToDiscord);
+
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
 });
