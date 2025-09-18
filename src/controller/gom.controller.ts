@@ -25,22 +25,9 @@ export class GomController {
 
     public static sendMessageToDiscord = async(req: Request, res: Response, next: NextFunction) => {
         try {
-            const messageContent = {
-                "username": "codie",
-                "content": "김민재 바보"
-            }
+            const result = await GomController.GomService.sendGameInfo();
 
-            const vv = await fetch(`${process.env.DISCORD_WEBHOOK}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(messageContent)
-                }
-            );
-
-            res.status(200).send('success');
+            res.status(200).send(result);
 
         }catch (error){
             console.error('An unexpected error occurred', error);
