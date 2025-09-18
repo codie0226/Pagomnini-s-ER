@@ -44,10 +44,34 @@ export class GomService{
 
   public sendGameInfo = async () => {
     const mostRecentGameInfo: simpleGameInfo = await this.recentGameService('라그나로스');
-  
+    
+    const gameDate: Date = new Date(mostRecentGameInfo.startDtm);
+    const curDate: Date = new Date();
+    gameDate.setHours(gameDate.getHours() + 9);
+    curDate.setHours(curDate.getHours() + 9);
+    
+    const timeDiff: Date = new Date(curDate.getTime() - gameDate.getTime());
+    const diffDate: number = timeDiff.getDate() - 1;
+    const diffHours: number = timeDiff.getHours();
+    const diffSec: number = timeDiff.getSeconds();
+
+    let timeDiffMessage: string = '';
+
+    if(diffDate > 0){
+      timeDiffMessage += `${diffDate}일 전`
+    }else if(diffHours > 0){
+      timeDiffMessage += `${diffHours}시간 전`
+    }else if(diffSec > 0){
+      timeDiffMessage += `${diffSec}초 전`
+    }else{
+      timeDiffMessage += '방금 전'
+    }
+
+    console.log(gameDate);
+
     const messageContent = {
       "username": "라그나로스 트래커",
-      "content": `${mostRecentGameInfo.startDtm}에 ${mostRecentGameInfo.mmrGain} 점수를 얻고 ${mostRecentGameInfo.mmrAfter}점이 되었음.`
+      "content": `${timeDiffMessage}에 ${mostRecentGameInfo.mmrGain}점을 얻고 ${mostRecentGameInfo.mmrAfter}점이 되었음.`
     }
 
     const send = await fetch(`${process.env.DISCORD_WEBHOOK}`,
