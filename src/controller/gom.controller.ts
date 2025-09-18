@@ -22,4 +22,26 @@ export class GomController {
             next(error); 
         }
     }
+
+    public static sendMessageToDiscord = async(req: Request, res: Response, next: NextFunction) => {
+        try {
+            const messageContent = {
+                "username": "codie",
+                "content": "김민재 바보"
+            }
+
+            const vv = await fetch(`${process.env.DISCORD_WEBHOOK}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(messageContent)
+                }
+            )
+        }catch (error){
+            console.error('An unexpected error occurred', error);
+            next(error);
+        }
+    }
 }
