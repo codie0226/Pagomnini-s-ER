@@ -6,6 +6,20 @@
     <title>스레드 검색 결과</title>
 </head>
 <body>
-    <%= result %>
+    <h1>스레드 검색 결과</h1>
+    <% if (result && result.length > 0) { %>
+        <ul>
+            <% result.forEach(function(item) { %>
+                <li>
+                    <p><%= item.text %></p>
+                    <% if (item.firstLInk) { %>
+                        <a href="<%= item.firstLInk %>" target="_blank" rel="noopener noreferrer">링크 보기</a>
+                    <% } %>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>검색 결과가 없습니다.</p>
+    <% } %>
 </body>
 </html>
