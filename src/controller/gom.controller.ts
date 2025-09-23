@@ -40,7 +40,7 @@ export class GomController {
         try {
             const result = await getDynamicHTML();
 
-            res.status(200).render('threads', result);
+            res.status(200).render('threads', {result});
         }catch (error){
             console.error('An unexpected error occurred', error);
             next(error);
