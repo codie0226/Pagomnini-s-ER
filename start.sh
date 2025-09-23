@@ -4,6 +4,9 @@
 
 echo "pagomnini-app 배포 스크립트를 시작합니다..."
 
+echo "깃에서 최신 버전을 불러옵니다..."
+git pull
+
 # 1. 기존에 동일한 이름의 컨테이너가 있다면 중지하고 삭제합니다.
 if [ $(docker ps -a -q -f name=pagomnini) ]; then
     echo "기존 'pagomnini' 컨테이너를 중지하고 삭제합니다."
