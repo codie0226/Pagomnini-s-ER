@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { GomService } from '../service/gom.service';
 import { simpleGameInfo } from '../dto/gom.interface';
+import { getDynamicHTML } from '../myutil/crawler';
 
 export class GomController {
     static GomService: GomService = new GomService();
@@ -29,6 +30,17 @@ export class GomController {
 
             res.status(200).send(result);
 
+        }catch (error){
+            console.error('An unexpected error occurred', error);
+            next(error);
+        }
+    }
+
+    public static getThreadResult = async(req: Request, res: Response, next: NextFunction) => {
+        try {
+            const result = await getDynamicHTML();
+
+            res.status(200).render('threads', result);
         }catch (error){
             console.error('An unexpected error occurred', error);
             next(error);

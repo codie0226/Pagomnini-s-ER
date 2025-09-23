@@ -25,6 +25,8 @@
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
+    "puppeteer": "^24.22.0",
+    "toad-scheduler": "^3.1.0",
     "typescript": "^5.9.2"
   },
   "devDependencies": {

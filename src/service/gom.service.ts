@@ -53,6 +53,7 @@ export class GomService{
     const timeDiff: Date = new Date(curDate.getTime() - gameDate.getTime());
     const diffDate: number = timeDiff.getDate() - 1;
     const diffHours: number = timeDiff.getHours();
+    const diffMins: number = timeDiff.getMinutes();
     const diffSec: number = timeDiff.getSeconds();
 
     let timeDiffMessage: string = '';
@@ -62,6 +63,9 @@ export class GomService{
     }
     if(diffHours > 0){
       timeDiffMessage += `${diffHours}시간 `
+    }
+    if(diffMins > 0){
+      timeDiffMessage += `${diffMins}분 `
     }
     if(diffSec > 0){
       timeDiffMessage += `${diffSec}초 `
