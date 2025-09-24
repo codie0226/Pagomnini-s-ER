@@ -38,9 +38,12 @@ export class GomController {
 
     public static getThreadResult = async(req: Request, res: Response, next: NextFunction) => {
         try {
-            const result = await getDynamicHTML();
+            const query: string = req.params.query || '';
+            const pageCount: number = Number(req.params.page) || 1;
 
-            console.log(result);
+            const result = await getDynamicHTML(query, pageCount);
+
+            //console.log(result);
 
             res.status(200).render('threads', {result});
         }catch (error){

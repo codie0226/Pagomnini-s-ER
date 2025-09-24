@@ -25,7 +25,7 @@ app.get('/nickname/:name', GomController.recentGame);
 
 app.post('/discord', GomController.sendMessageToDiscord);
 
-app.get('/threads', GomController.getThreadResult);
+app.get('/threads/:query/:page', GomController.getThreadResult);
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);

@@ -1,42 +1,71 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
+import dotenv from 'dotenv';
+dotenv.config();
 
-export const getDynamicHTML = async () => {
+export const getDynamicHTML = async (query: string, pageCount: number) => {
     let browser; // Define browser outside try...catch to access it in the finally block
     try {
         // 1. Launch a headless browser instance.
         // 'headless: "new"' uses the modern headless mode which is more capable.
-        browser = await puppeteer.launch({ headless: "new" });
+        browser = await puppeteer.launch({ headless: false });
 
         // 2. Open a new page.
-        const page = await browser.newPage();
+        const puppeteerPage = await browser.newPage();
+
+        await puppeteerPage.goto('https://www.threads.com/login?hl=ko');
+        await puppeteerPage.waitForSelector('input[placeholder="사용자 이름, 전화번호 또는 이메일 주소"]');
+        await puppeteerPage.type('input[placeholder="사용자 이름, 전화번호 또는 이메일 주소"]', process.env.INS_ID || '');
+        await puppeteerPage.waitForSelector('input[placeholder="비밀번호"]');
+        await puppeteerPage.type('input[placeholder="비밀번호"]', process.env.INS_PW || '');
+        await Promise.all([puppeteerPage.click('div[class="x1n2onr6"]'), puppeteerPage.waitForNavigation({waitUntil: 'networkidle2'})]);
 
         // 3. Navigate to the URL and wait for the network to be idle.
         // 'networkidle2' is a good signal that dynamic content has likely finished loading.
-        const url = 'https://www.threads.com/search?q=%EB%B9%95%EC%8A%A4&serp_type=tags&hl=ko';
-        await page.goto(url, {
-            waitUntil: 'networkidle2',
+        const url = `https://www.threads.com/search?q=${query}&serp_type=tags&hl=ko`;
+        await puppeteerPage.goto(url, {
+            waitUntil: 'networkidle2'
         });
 
         // 4. Wait for the target content to appear on the page.
         // Modern sites like Threads use auto-generated, changing class names.
         // It's more reliable to select elements by stable attributes like ARIA roles.
         // Here, we wait for a div that acts as a list item in a feed.
-        const itemSelector = 'div[class="x78zum5 xdt5ytf"]';
-        await page.waitForSelector(itemSelector);
+        try{
+            let lastHeight = await puppeteerPage.evaluate('document.body.scrollHeight');
+
+            for(let i = 0; i < pageCount; i++){
+                await puppeteerPage.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+
+                await puppeteerPage.waitForNetworkIdle();
+                let newHeight = await puppeteerPage.evaluate('document.body.scrollHeight');
+
+                // if(newHeight === lastHeight){
+                //     break;
+                // }
+                console.log('scrolling...');
+            }
+        }catch(error){
+            console.error('An error occurred during scrolling:', error);
+            throw new Error('Problem with scrolling');
+        }
+        //const itemSelector = 'div[class="x78zum5 xdt5ytf"]';
+        const itemSelector = 'div[class="xrvj5dj xd0jker"]';
+        await puppeteerPage.waitForSelector(itemSelector);
 
         // 5. Extract the data from the page.
         // page.$$eval runs `document.querySelectorAll` in the browser and passes the
         // found elements to a callback function.
-        const searchResults = await page.$$eval(itemSelector, (elements: any) =>
+        const searchResults = await puppeteerPage.$$eval(itemSelector, (elements) =>
             // We map over the elements to extract the data we need.
             // This callback runs in the browser's context, not in Node.js.
-            elements.map((el: any) => ({
+            elements.map((el) => ({
                 // Extract the plain text content of the element.
                 text: el.innerText,
                 // You could also extract other things, like links:
                 firstLink: el.querySelector('a')?.href,
-            }))
-        );
+            }),
+            elements.forEach((el) => console.log(el.innerText))
+        ));
 
         console.log(`Found ${searchResults.length} search results.`);
         console.log(searchResults);
