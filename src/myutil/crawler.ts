@@ -15,6 +15,7 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
 
         // 2. Open a new page.
         const puppeteerPage = await browser.newPage();
+        await puppeteerPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
 
         await puppeteerPage.goto('https://www.threads.com/login?hl=ko');
         await puppeteerPage.waitForSelector('input[placeholder="사용자 이름, 전화번호 또는 이메일 주소"]');
