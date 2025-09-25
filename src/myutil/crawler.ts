@@ -21,7 +21,7 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
         await puppeteerPage.type('input[placeholder="사용자 이름, 전화번호 또는 이메일 주소"]', process.env.INS_ID || '');
         await puppeteerPage.waitForSelector('input[placeholder="비밀번호"]');
         await puppeteerPage.type('input[placeholder="비밀번호"]', process.env.INS_PW || '');
-        await puppeteerPage.waitForSelector('form div[role="button"]');
+        //await puppeteerPage.waitForSelector('form div[role="button"]');
         await Promise.all([puppeteerPage.click('form div[role="button"]'), puppeteerPage.waitForNavigation({waitUntil: 'networkidle2'})]);
 
         // 3. Navigate to the URL and wait for the network to be idle.

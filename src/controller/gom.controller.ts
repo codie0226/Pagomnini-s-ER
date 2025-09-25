@@ -51,7 +51,7 @@ export class GomController {
             //console.log(result);
 
             res.status(200).download(fileName, () => {
-                res.redirect('/');
+                res.send('success');
             });
         }catch (error){
             console.error('An unexpected error occurred', error);
