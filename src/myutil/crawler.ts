@@ -11,7 +11,7 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
     try {
         // 1. Launch a headless browser instance.
         // 'headless: "new"' uses the modern headless mode which is more capable.
-        browser = await puppeteer.launch({ headless: false });
+        browser = await puppeteer.launch({ headless: true });
 
         // 2. Open a new page.
         const puppeteerPage = await browser.newPage();
