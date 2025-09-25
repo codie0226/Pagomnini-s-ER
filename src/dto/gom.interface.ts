@@ -4,3 +4,8 @@ export interface simpleGameInfo {
     mmrGain: number,
     mmrAfter: number
 }
+
+export interface crawlData {
+    text: string | undefined,
+    firstLink: string | undefined;
+}

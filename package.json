@@ -21,6 +21,7 @@
   "homepage": "https://github.com/codie0226/Pagomnini-s-ER#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "csv-stringify": "^6.6.0",
     "dotenv": "^17.2.2",
     "ejs": "^3.1.10",
     "express": "^5.1.0",

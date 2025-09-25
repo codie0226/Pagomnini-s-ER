@@ -1,5 +1,9 @@
 import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import {stringify} from 'csv-stringify/sync';
+import { crawlData } from '../dto/gom.interface';
+import path from 'path';
 dotenv.config();
 
 export const getDynamicHTML = async (query: string, pageCount: number) => {
@@ -17,7 +21,8 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
         await puppeteerPage.type('input[placeholder="사용자 이름, 전화번호 또는 이메일 주소"]', process.env.INS_ID || '');
         await puppeteerPage.waitForSelector('input[placeholder="비밀번호"]');
         await puppeteerPage.type('input[placeholder="비밀번호"]', process.env.INS_PW || '');
-        await Promise.all([puppeteerPage.click('div[class="x1n2onr6"]'), puppeteerPage.waitForNavigation({waitUntil: 'networkidle2'})]);
+        await puppeteerPage.waitForSelector('form div[role="button"]');
+        await Promise.all([puppeteerPage.click('form div[role="button"]'), puppeteerPage.waitForNavigation({waitUntil: 'networkidle2'})]);
 
         // 3. Navigate to the URL and wait for the network to be idle.
         // 'networkidle2' is a good signal that dynamic content has likely finished loading.
@@ -30,13 +35,31 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
         // Modern sites like Threads use auto-generated, changing class names.
         // It's more reliable to select elements by stable attributes like ARIA roles.
         // Here, we wait for a div that acts as a list item in a feed.
+        
+        const itemSelector = 'div[aria-label="칼럼 본문"] > div > div > div > div > div > div > div > div';
+        await puppeteerPage.waitForSelector(itemSelector);
         try{
             let lastHeight = await puppeteerPage.evaluate('document.body.scrollHeight');
-
+            
             for(let i = 0; i < pageCount; i++){
+                let prevRecords = await puppeteerPage.$$eval(itemSelector, items => items.length);
+                console.log(prevRecords);
+                
                 await puppeteerPage.evaluate('window.scrollTo(0, document.body.scrollHeight)');
 
-                await puppeteerPage.waitForNetworkIdle();
+                //await puppeteerPage.waitForNetworkIdle({idleTime: 3000});
+
+                await puppeteerPage.waitForFunction(
+                    (prevRecords, itemSelector) => {
+                        const newRecords = document.querySelectorAll(itemSelector).length;
+                        console.log(`prev: ${prevRecords}, new: ${newRecords}`)
+                        return newRecords > prevRecords;
+                    },
+                    {timeout: 30000},
+                    prevRecords,
+                    itemSelector
+                );
+
                 let newHeight = await puppeteerPage.evaluate('document.body.scrollHeight');
 
                 // if(newHeight === lastHeight){
@@ -48,14 +71,12 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
             console.error('An error occurred during scrolling:', error);
             throw new Error('Problem with scrolling');
         }
-        //const itemSelector = 'div[class="x78zum5 xdt5ytf"]';
-        const itemSelector = 'div[class="xrvj5dj xd0jker"]';
         await puppeteerPage.waitForSelector(itemSelector);
 
         // 5. Extract the data from the page.
         // page.$$eval runs `document.querySelectorAll` in the browser and passes the
         // found elements to a callback function.
-        const searchResults = await puppeteerPage.$$eval(itemSelector, (elements) =>
+        const searchResults: crawlData[] = await puppeteerPage.$$eval(itemSelector, (elements) =>
             // We map over the elements to extract the data we need.
             // This callback runs in the browser's context, not in Node.js.
             elements.map((el) => ({
@@ -63,9 +84,8 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
                 text: el.innerText,
                 // You could also extract other things, like links:
                 firstLink: el.querySelector('a')?.href,
-            }),
-            elements.forEach((el) => console.log(el.innerText))
-        ));
+            }))
+        );
 
         console.log(`Found ${searchResults.length} search results.`);
         console.log(searchResults);
@@ -81,3 +101,33 @@ export const getDynamicHTML = async (query: string, pageCount: number) => {
         }
     }
 };
+
+export const writeCSV = (data: crawlData[]): string => {
+    const writeData = data.map((elements: crawlData) => {
+        if(elements.text === undefined || elements.firstLink === undefined){
+            elements.text = 'empty';
+            elements.firstLink = 'empty';
+        }
+        const textContent = elements.text;
+        const fixedContent = textContent.split('\n');
+        const user = fixedContent[0];
+        const title = fixedContent[1];
+        const date = fixedContent[2];
+        const content = fixedContent.slice(3).join('\n');
+        const fixedLink = elements.firstLink;
+        return {user, title, date, content, link: fixedLink};
+    });
+
+    const output = stringify(writeData, {
+        header: true
+    });
+
+    const dirPath = path.join(__dirname, '..', '..', 'output');
+    const currentTime = new Date().toISOString().replace(/:/g, '-');
+    const fileName: string = `output.${currentTime}.csv`;
+    const fullName = path.join(dirPath, fileName);
+
+    fs.writeFileSync(fullName, output, 'utf-8');
+
+    return fullName;
+}

@@ -18,6 +18,9 @@
                 </li>
             <% }); %>
         </ul>
+    <% } else if (fileName) { %>
+        <p>파일이 성공적으로 생성되었습니다. <a href="../output/<%= fileName %>" download>여기</a>를 클릭하여 다운로드하세요.</p>
+
     <% } else { %>
         <p>검색 결과가 없습니다.</p>
     <% } %>

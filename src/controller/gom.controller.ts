@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { GomService } from '../service/gom.service';
 import { simpleGameInfo } from '../dto/gom.interface';
-import { getDynamicHTML } from '../myutil/crawler';
+import { getDynamicHTML, writeCSV } from '../myutil/crawler';
 
 export class GomController {
     static GomService: GomService = new GomService();
@@ -42,10 +42,17 @@ export class GomController {
             const pageCount: number = Number(req.params.page) || 1;
 
             const result = await getDynamicHTML(query, pageCount);
+            if(result === undefined) {
+                throw new Error('crawl result is undefined');
+            }
+
+            const fileName: string = writeCSV(result);
 
             //console.log(result);
 
-            res.status(200).render('threads', {result});
+            res.status(200).download(fileName, () => {
+                res.redirect('/');
+            });
         }catch (error){
             console.error('An unexpected error occurred', error);
             next(error);
